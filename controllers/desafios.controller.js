@@ -2,7 +2,7 @@ const db = require("../models");
 const Desafio = db.desafios;
 
 exports.create = async (req, res) => {
-  const { xp, recompensa, objetivoDesafio, estadoDesafio, username } = req.body;
+  const { xp,descDesafio, recompensa, objetivoDesafio, estadoDesafio, username } = req.body;
 
   try {
     const desafio = new Desafio({
@@ -11,6 +11,7 @@ exports.create = async (req, res) => {
       objetivoDesafio,
       estadoDesafio,
       username,
+      descDesafio
     });
 
     const newDesafio = await desafio.save();
@@ -75,7 +76,7 @@ exports.findOne = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  if (!req.body || !req.body.id) {
+  if (!req.body || !req.body._id) {
     return res.status(400).json({
       success: false,
       msg: `Id must not be empty!`,

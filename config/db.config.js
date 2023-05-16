@@ -6,6 +6,5 @@ PASSWORD: process.env.DB_PASSWORD || 'db123456789',
 DB: process.env.DB_NAME || 'ecopointer'
 };
 config.URL =
-`mongodb+srv://${config.USER}:${config.PASSWORD}@cluster0.mun28.mongodb.net/?
-retryWrites=true&w=majority`;
+`mongodb+srv://dbTeresa:db123456789@cluster0.arrsee4.mongodb.net/ecopointer?retryWrites=true&w=majority`;
 module.exports = config;

@@ -1,105 +1,21 @@
-const User = require("../models/user.model");
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/users.controller');
 
-exports.create = async (req, res) => {
-  try {
-    // Lógica para criar um novo usuário com base nos dados da solicitação (req.body)
-    // ...
-    // Retorne uma resposta adequada
-    return res.status(201).json({
-      success: true,
-      msg: "Novo usuário criado com sucesso",
-      user: newUser, // objeto do novo usuário criado
-    });
-  } catch (error) {
-    // Lógica para lidar com erros
-    // ...
-    // Retorne uma resposta adequada
-    return res.status(500).json({
-      success: false,
-      msg: `Erro ao criar usuário: ${error.message}`,
-    });
-  }
-};
+// Rota para criar um novo usuário
+router.post('/user', userController.create);
 
-exports.findAll = async (req, res) => {
-  try {
-    // Lógica para obter todos os usuários do banco de dados
-    // ...
-    // Retorne uma resposta adequada
-    return res.status(200).json({ success: true, users: data }); // 'data' representa a lista de usuários obtida
-  } catch (error) {
-    // Lógica para lidar com erros
-    // ...
-    // Retorne uma resposta adequada
-    return res.status(500).json({ success: false, msg: error.message });
-  }
-};
+// Rota para obter todos os usuários
+router.get('/user', userController.findAll);
 
-exports.findOne = async (req, res) => {
-  try {
-    // Lógica para encontrar um usuário pelo ID fornecido (req.params.id)
-    // ...
-    // Retorne uma resposta adequada
-    if (!User) {
-      return res.status(404).json({
-        success: false,
-        msg: `Não foi possível encontrar um usuário com o ID ${req.params.id}`,
-      });
-    }
-    return res.status(200).json({ success: true, user: User });
-  } catch (error) {
-    // Lógica para lidar com erros
-    // ...
-    // Retorne uma resposta adequada
-    return res.status(500).json({
-      success: false,
-      msg: `Erro ao encontrar usuário: ${error.message}`,
-    });
-  }
-};
+// Rota para obter um usuário específico por ID
+router.get('/user/:id', userController.findOne);
 
-exports.update = async (req, res) => {
-  try {
-    // Lógica para atualizar um usuário com base no ID fornecido (req.params.id) e dados da solicitação (req.body)
-    // ...
-    // Retorne uma resposta adequada
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        msg: `Não foi possível atualizar o usuário com o ID ${req.params.id}`,
-      });
-    }
-    return res.status(200).json({
-      success: true,
-      msg: `Usuário com ID ${req.params.id} atualizado com sucesso`
-      , }); } catch (error) { // Lógica para lidar com erros // ... // Retorne uma resposta adequada 
-        return res.status(500).json({ success: false, msg: `Erro ao atualizar usuário: ${error.message}`,
-      });
-      }
-      };
-      
-      exports.delete = async (req, res) => {
-      try {
-      // Lógica para excluir um usuário com base no ID fornecido (req.params.id)
-      // ...
-      // Retorne uma resposta adequada
-      if (!User) {
-      return res.status(404).json({
-      success: false,
-      msg: `Não foi possível excluir o usuário com o ID ${req.params.id}`,
-      });
-      }
-      return res.status(200).json({
-      success: true,
-      msg: `Usuário com ID ${req.params.id} excluído com sucesso`,
-      });
-      } catch (error) {
-      // Lógica para lidar com erros
-      // ...
-      // Retorne uma resposta adequada
-      return res.status(500).json({
-      success: false,
-      msg: `Erro ao excluir usuário: ${error.message}`,
-      });
-      }
-      };
+// Rota para atualizar um usuário por ID
+router.put('/user/:id', userController.update);
+
+// Rota para excluir um usuário por ID
+router.delete('/user/:id', userController.delete);
+
+
+module.exports = router;

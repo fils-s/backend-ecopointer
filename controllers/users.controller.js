@@ -65,7 +65,7 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).exec();
+    const user = await User.findById(req.params.id).select("username nome").exec();
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -114,6 +114,7 @@ exports.update = async (req, res) => {
     if (error.name === "CastError") {
       return res.status(400).json
      }};
+    }
 
      exports.delete = async (req, res) => {
         try {
@@ -136,5 +137,5 @@ exports.update = async (req, res) => {
           });
         }
       };
-    }      
+       
 

@@ -73,7 +73,7 @@ exports.findOne = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  if (!req.body || !req.body.id) {
+  if (!req.body || !req.body._id) {
     return res.status(400).json({
       success: false,
       msg: `Id must not be empty!`,
@@ -84,7 +84,7 @@ exports.update = async (req, res) => {
     const ecoponto = await Ecoponto.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { runValidators: true }
+      
     ).exec();
 
     if (!ecoponto) {
