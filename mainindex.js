@@ -11,17 +11,19 @@ app.use(express.json()); //enable parsing JSON body data
 
 // root route -- /api/
 app.get('/', function (req, res) {
-    res.status(200).json({ message: 'home -- TUTORIALS api' });
+    res.status(200).json({ message: 'home -- Ecopointer api' });
 });
 
 // routing middleware for resource TUTORIALS
-app.use('/api/users', require('./routes/users.routes'))
-app.use('/api/eventos', require('./routes/eventos.routes'))
-app.use('/api/desafios', require('./routes/desafios.routes'))
-app.use('/api/ecopontos', require('./routes/ecopontos.routes'))
+app.use('/Ecopointer/users', require('./routes/users.routes'))
+app.use('/Ecopointer/events', require('./routes/eventos.routes'))
+app.use('/Ecopointer/challenges', require('./routes/desafios.routes'))
+app.use('/Ecopointer/bins', require('./routes/ecopontos.routes'))
+app.use('/Ecopointer/faqs', require('./routes/faqs.routes'))
+app.use('/Ecopointer/posts', require('./routes/posts.routes'))
 
 // handle invalid routes
 app.get('*', function (req, res) {
-    res.status(404).json({ message: 'WHAT???' });
+    res.status(404).json({ message: 'Erro no caminho' });
 })
 app.listen(port, host, () => console.log(`App listening at http://${host}:${port}/`));

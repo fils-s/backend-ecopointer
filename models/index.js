@@ -23,5 +23,7 @@ db.mongoose
     db.ecopontos = require("./ecoponto.model.js")(mongoose);
     db.desafios = require("./desafio.model.js")(mongoose);
     db.eventos = require("./evento.model.js")(mongoose);
+    db.faqs= require("./faqs.model.js")(mongoose);
+    db.posts=require("./post.model.js")(mongoose)
 
 module.exports = db;

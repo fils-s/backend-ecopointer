@@ -2,15 +2,18 @@ const db = require("../models");
 const Ecoponto = db.ecopontos;
 
 exports.create = async (req, res) => {
-  const { xp, descricao, username } = req.body;
+ 
 
   try {
     const ecoponto = new Ecoponto({
-      localizacao: xp,
-      descricao,
-      username,
+      
+      localizacao:req.body.localizacao, 
+      
+      descricao:req.body.descricao,
+      user:req.loggedUserId,
+      utilizacao:0
     });
-
+    console.log(req.loggedUserId);
     const newEcoponto = await ecoponto.save();
 
     res.status(201).json({
@@ -39,7 +42,7 @@ exports.findAll = async (req, res) => {
 
   try {
     const data = await Ecoponto.find(condition)
-      .select("localizacao descricao username")
+      .select("localizacao descricao user utilizacao")
       .exec();
 
     return res.status(200).json({ success: true, ecoponto: data });
@@ -73,7 +76,7 @@ exports.findOne = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  if (!req.body || !req.body._id) {
+  if (!req.params.id) {
     return res.status(400).json({
       success: false,
       msg: `Id must not be empty!`,
@@ -113,7 +116,11 @@ exports.update = async (req, res) => {
 };
 
 exports.delete = async (req,res) => {
-    try {
+  try {
+    if (req.loggedUserRole !== "admin")
+    return res.status(403).json({
+    success: false, msg: "This request requires ADMIN role!"
+    });
     const ecoponto = await Ecoponto.findByIdAndRemove(req.params.id).exec();
     if (!ecoponto) {
     return res.status(404).json({
@@ -132,3 +139,42 @@ exports.delete = async (req,res) => {
         });
         }
         };
+exports.add = async (req, res) => {
+  if (!req.params.id) {
+    return res.status(400).json({
+      success: false,
+      msg: `Id must not be empty!`,
+    });
+  }
+
+  try {
+    const ecoponto = await Ecoponto.findByIdAndUpdate(
+      req.params.id,
+      ecoponto.utilizacao=ecoponto.utilizacao++,
+      
+    ).exec();
+
+    if (!ecoponto) {
+      return res.status(404).json({
+        success: false,
+        msg: `Cannot update Ecoponto with ID ${req.params.id}`,
+      });
+    }
+
+    return res.json({
+      success: true,
+      msg: `Ecoponto with ID ${req.params.id} updated successfully`,
+    });
+  } catch (error) {
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        msg: `ID parameter is not a valid ObjectId`,
+      });
+    }
+    return res.status(500).json({
+      success: false,
+      msg: `Error updating Ecoponto: ${error.message}`,
+    });
+  }
+};

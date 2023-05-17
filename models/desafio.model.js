@@ -20,7 +20,7 @@ module.exports = (mongoose) => {
         type: Number,
         required: [true, "estadoDesafio field is mandatory"],
       },
-      username: {
+      user: {
         type: String,
         required: [true, "Username field is mandatory"],
       },

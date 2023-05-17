@@ -1,30 +1,28 @@
 const db = require("../models");
-const Evento = db.eventos;
+const Faq = db.faqs;
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const config = require("../config/db.config.js");
 const { use } = require("../routes/users.routes");
 
+
+
 exports.create = async (req, res) => {
-  console.log(req.loggedUserId);
-  const evento = new Evento({
+  
+  
+  const faq = new Faq({
     nome: req.body.nome,
     descricao: req.body.descricao,
-    email: req.body.email,
-    IDcidade: req.body.IDcidade,
-    data: req.body.data,
-    imagem: req.body.imagem,
-    gostos: 0,
-    user: req.loggedUserId,
+    type: req.body.type,
   });
 
   try {
-    const newEvento = await evento.save();
+    const newFaq = await faq.save();
     return res.status(201).json({
       success: true,
-      msg: "New Evento created.",
-      URL: "/evento/" + newEvento._id,
+      msg: "New ajuda created.",
+      URL: "/faq/" + newFaq._id,
     });
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -40,7 +38,7 @@ exports.create = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      msg: `Error creating Evento: ${error.message}`,
+      msg: `Error creating ajuda: ${error.message}`,
     });
   }
 };
@@ -50,11 +48,11 @@ exports.findAll = async (req, res) => {
   const condition = id ? { _id: id } : {};
 
   try {
-    const data = await Evento.find(condition)
-      .select("nome descricao email IDcidade data imagem gostos user")
+    const data = await Faq.find(condition)
+      .select("nome descricao type ")
       .exec();
 
-    return res.status(200).json({ success: true, Evento: data });
+    return res.status(200).json({ success: true, Faq: data });
   } catch (error) {
     return res.status(500).json({ success: false, msg: error.message });
   }
@@ -62,14 +60,14 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    const evento = await Evento.findById(req.params.id).exec();
-    if (!evento) {
+    const faq = await Faq.findById(req.params.id).exec();
+    if (!faq) {
       return res.status(404).json({
         success: false,
-        msg: `Cannot find any Evento with the ID ${req.params.id}`,
+        msg: `Cannot find any ajuda with the ID ${req.params.id}`,
       });
     }
-    return res.json({ success: true, evento: evento });
+    return res.json({ success: true, faq: faq });
   } catch (error) {
     if (error.name === "CastError") {
       return res.status(400).json({
@@ -79,7 +77,7 @@ exports.findOne = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      msg: `Error finding Evento: ${error.message}`,
+      msg: `Error finding Ajuda: ${error.message}`,
     });
   }
 };
@@ -93,18 +91,20 @@ exports.update = async (req, res) => {
   }
 
   try {
-    const evento = await Evento.findByIdAndUpdate(req.params.id, req.body, {
-      runValidators: true,
-    }).exec();
-    if (!evento) {
+    const faq = await Faq.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { runValidators: true }
+    ).exec();
+    if (!faq) {
       return res.status(404).json({
         success: false,
-        msg: `Cannot update Evento with ID ${req.params.id}`,
+        msg: `Ajuda update Evento with ID ${req.params.id}`,
       });
     }
     return res.json({
       success: true,
-      msg: `Evento with ID ${req.params.id} updated successfully`,
+      msg: `Ajuda with ID ${req.params.id} updated successfully`,
     });
   } catch (error) {
     if (error.name === "CastError") {
@@ -115,38 +115,34 @@ exports.update = async (req, res) => {
     }
     return res.status(500).json({
       success: false,
-      msg: `Error updating Evento: ${error.message}`,
-    });
-  }
-};
-
-exports.delete = async (req, res) => {
-  
-  try {
-    if (req.loggedUserRole !== "admin")
-    return res.status(403).json({
-    success: false, msg: "This request requires ADMIN role!"
-    });
-    // do not expose users' sensitive data
-    let evento =   await Evento.findByIdAndRemove(req.params.id)
-    .exec();
-    if (!evento) {
-      return res.status(404).json({
-        success: false,
-        msg: `Cannot delete evento with ID ${req.params.id}`,
+      msg: `Error updating Evento: ${error.message}`
       });
     }
-    return res.json({
-      success: true,
-      msg: `Evento with ID ${req.params.id} deleted successfully`,
-    });
-    
-   
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      msg: `Error deleting evento: ${error.message}`,
-    });
-    
-  }
+  };
+  
+  exports.delete = async (req, res) => {
+    try {
+        if (req.loggedUserRole !== "admin")
+        return res.status(403).json({
+        success: false, msg: "This request requires ADMIN role!"
+        });
+      const faq = await Faq.findByIdAndRemove(req.params.id).exec();
+      if (!faq) {
+        return res.status(404).json({
+          success: false,
+          msg: `Cannot delete Ajuda with ID ${req.params.id}`,
+        });
+      }
+  
+      return res.json({
+        success: true,
+        msg: `Ajuda with ID ${req.params.id} deleted successfully`,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        msg: `Error deleting Ajuda: ${error.message}`,
+      });
     }
+  };
+  
