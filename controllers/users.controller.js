@@ -126,7 +126,7 @@ exports.update = async (req, res) => {
   if (req.params.id !=req.loggedUserId ) {
     return res.status(403).json({
       success: false,
-      msg: `Only the user can update its own`,
+      msg: `Only the user can update its own profile`,
     });
   }
   
