@@ -1,5 +1,3 @@
-const { type } = require("os");
-
 module.exports = (mongoose) => {
   const schema = mongoose.Schema(
     {
@@ -11,15 +9,24 @@ module.exports = (mongoose) => {
         type: String,
         required: [true, "Descricao field is mandatory"],
       },
-      email: { type: String, required: [true, "Email field is mandatory"] },
-      IDcidade: { type: String, required: [true, "Cidade field is mandatory"] },
+
+      cidade: { type: String, required: [true, "Cidade field is mandatory"] },
       data: {
         type: Date,
         required: [true, "Data field is mandatory"],
       },
-      imagem: { type: String, required: [true, "Imagem field is mandatory"] },
+      imagem: {
+        type: String,
+        required: [true, "Imagem field is mandatory"],
+        validate: {
+          validator: function (value) {
+            return /.*\.(png|jpg|jpeg|gif|bmp)$/.test(value);
+          },
+          message: "Invalid image URL format",
+        },
+      },
       gostos: { type: Number },
-      user :{type: String}
+      user: { type: String },
     },
     { timestamps: false }
   );

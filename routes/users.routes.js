@@ -14,7 +14,7 @@ router.get('/user',authController.verifyToken, userController.findAll);
 router.get('/user/:id',authController.verifyToken, userController.findOne);
 
 // Rota para atualizar um usuário por ID
-router.put('/user/:id', userController.update);
+router.put('/user/:id',authController.verifyToken, userController.update);
 
 // Rota para excluir um usuário por ID
 router.delete('/user/:id',authController.verifyToken, userController.delete);

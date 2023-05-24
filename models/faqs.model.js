@@ -1,4 +1,4 @@
-const { type } = require("os");
+
 module.exports = (mongoose) => {
   const schema = mongoose.Schema(
     {

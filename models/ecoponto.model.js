@@ -1,10 +1,15 @@
-const { type } = require("os");
 module.exports = (mongoose) => {
   const schema = mongoose.Schema(
     {
       localizacao: {
-        type: Array,
-        required: [true, "Localização field is mandatory"],
+        latitude: {
+          type: Number,
+          required: [true, "Latitude field is mandatory"],
+        },
+        longitude: {
+          type: Number,
+          required: [true, "Longitude field is mandatory"],
+        },
       },
       descricao: {
         type: String,
@@ -13,12 +18,13 @@ module.exports = (mongoose) => {
       user: {
         type: String,
       },
-      utilizacao:{
-        type: Number
-      }
+      utilizacao: {
+        type: Number,
+      },
     },
     { timestamps: false }
   );
+
   const Ecoponto = mongoose.model("ecoponto", schema);
   return Ecoponto;
 };

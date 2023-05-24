@@ -1,20 +1,28 @@
 module.exports = (mongoose) => {
-    const schema = mongoose.Schema(
-      {
-        imagem: { type: String, required: [true, "imagem field is mandatory"] },
-        data: {
-          type: Date,
-          required: [true, "data field is mandatory"],
+  const schema = mongoose.Schema(
+    {
+      imagem: {
+        type: String,
+        required: [true, "Imagem field is mandatory"],
+        validate: {
+          validator: function (value) {
+            
+            return /.*\.(png|jpg|jpeg|gif|bmp)$/.test(value);
+          },
+          message: "Invalid image URL format",
         },
-        user: {
-          type: String,
-          
-        },
-        
       },
-      { timestamps: false }
-    );
-    const Post = mongoose.model("posts", schema);
-    return Post;
-  };
-  
+      data: {
+        type: Date,
+        required: [true, "Data field is mandatory"],
+      },
+      user: {
+        type: String,
+      },
+    },
+    { timestamps: false }
+  );
+
+  const Post = mongoose.model("posts", schema);
+  return Post;
+};

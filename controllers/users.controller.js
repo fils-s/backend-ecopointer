@@ -8,14 +8,14 @@ const { use } = require("../routes/users.routes");
 
 
 exports.create = async (req, res) => {
-  const { username, nome, email, cidade, password, morada, xp, tipoUser } =
+  const { username, nome, email, IDcidade, password, morada, xp, tipoUser } =
     req.body;
 
   if (
     !username ||
     !nome ||
     !email ||
-    !cidade ||
+    !IDcidade ||
     !password ||
     !morada ||
     !tipoUser
@@ -30,7 +30,7 @@ exports.create = async (req, res) => {
     username,
     nome,
     email,
-    cidade,
+    IDcidade,
     password: bcrypt.hashSync(req.body.password, 10),
     morada,
     xp: 0,
@@ -66,8 +66,7 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  console.log(req.loggedUserRole)
-  console.log(req.loggedUserId)
+ 
   
   const id = req.query.id;
 
@@ -94,7 +93,7 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
-      .select("username nome email")
+      .select("username nome email tipoUser")
       .exec();
     if (!user) {
       return res.status(404).json({
@@ -124,6 +123,13 @@ exports.update = async (req, res) => {
       msg: `ID parameter must not be empty!`,
     });
   }
+  if (req.params.id !=req.loggedUserId ) {
+    return res.status(403).json({
+      success: false,
+      msg: `Only the user can update its own`,
+    });
+  }
+  
   try {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       runValidators: true,

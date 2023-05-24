@@ -11,8 +11,7 @@ exports.create = async (req, res) => {
   const evento = new Evento({
     nome: req.body.nome,
     descricao: req.body.descricao,
-    email: req.body.email,
-    IDcidade: req.body.IDcidade,
+    cidade: req.body.cidade,
     data: req.body.data,
     imagem: req.body.imagem,
     gostos: 0,
@@ -51,7 +50,7 @@ exports.findAll = async (req, res) => {
 
   try {
     const data = await Evento.find(condition)
-      .select("nome descricao email IDcidade data imagem gostos user")
+      .select("nome descricao  cidade data imagem gostos user")
       .exec();
 
     return res.status(200).json({ success: true, Evento: data });
