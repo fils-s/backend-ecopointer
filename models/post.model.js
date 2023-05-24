@@ -19,6 +19,9 @@ module.exports = (mongoose) => {
       user: {
         type: String,
       },
+      ecoponto :{
+        type: String,
+      }
     },
     { timestamps: false }
   );

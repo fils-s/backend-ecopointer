@@ -46,7 +46,7 @@ exports.findAll = async (req, res) => {
 
   try {
     const data = await Post.find(condition)
-      .select("imagem data user ")
+      .select("imagem data user ecoponto")
       .exec();
 
     return res.status(200).json({ success: true, Post: data });
