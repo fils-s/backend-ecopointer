@@ -1,4 +1,4 @@
-const dotenv = require('dotenv').config(); // read environment variables from .env file
+
 const express = require('express');
 const cors = require('cors'); // middleware to enable CORS (Cross-Origin Resource Sharing)
 const app = express();
