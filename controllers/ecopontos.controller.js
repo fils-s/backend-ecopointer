@@ -143,7 +143,7 @@ exports.delete = async (req, res) => {
 };
 
 exports.add = async (req, res) => {
-  console.log(req.loggedUserId)
+  
   if (!req.params || !req.params.id) {
     return res.status(400).json({
       success: false,
