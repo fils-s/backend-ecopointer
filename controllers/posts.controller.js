@@ -1,10 +1,8 @@
 const db = require("../models");
 const Post = db.posts;
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const mongoose = require("mongoose");
-const config = require("../config/db.config.js");
+
 const { use } = require("../routes/users.routes");
+const Ecoponto = db.ecopontos;
 
 exports.create = async (req, res) => {
   console.log(req.loggedUserId);
@@ -123,13 +121,22 @@ exports.delete = async (req, res) => {
     success: false, msg: "This request requires ADMIN role!"
     });
     // do not expose users' sensitive data
+    
     let post =   await Post.findByIdAndRemove(req.params.id)
-    .exec();
+    
+      const ecoponto = await Ecoponto.findByIdAndUpdate(
+        post.ecoponto,
+        { $inc: { utilizacao: -1 } },
+        { new: true }
+      ).exec();
+    
+    
     if (!post) {
       return res.status(404).json({
         success: false,
         msg: `Cannot delete Post with ID ${req.params.id}`,
       });
+      
     }
     return res.json({
       success: true,
