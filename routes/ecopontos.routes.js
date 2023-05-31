@@ -15,9 +15,9 @@ router.get('/bin/:id', ecopontoController.findOne);
 // Rota para atualizar um Ecoponto por ID
 router.put('/bin/:id', ecopontoController.update);
 router.put('/bin/add/:id', ecopontoController.add);
-router.put('/bin/post/:id',authController.verifyToken, ecopontoController.add);
+router.put('/bin/post/:id', authController.verifyToken, ecopontoController.add);
 
 // Rota para excluir um Ecoponto por ID
-router.delete('/bin/:id',authController.verifyToken, ecopontoController.delete);
+router.delete('/bin/:id', authController.verifyToken, ecopontoController.delete);
 
 module.exports = router;

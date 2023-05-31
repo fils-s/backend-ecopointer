@@ -16,6 +16,6 @@ router.get('/faq/:id', faqController.findOne);
 router.put('/faq/:id', faqController.update);
 
 // Rota para excluir um desafio por ID
-router.delete('/faq/:id',authController.verifyToken, faqController.delete);
+router.delete('/faq/:id', authController.verifyToken, faqController.delete);
 
 module.exports = router;

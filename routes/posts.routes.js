@@ -4,7 +4,7 @@ const postController = require('../controllers/posts.controller');
 const authController= require('../controllers/auth.controller')
 
 // Rota para criar um novo Ecoponto
-router.post('/post',authController.verifyToken, postController.create);
+router.post('/post', authController.verifyToken, postController.create);
 
 // Rota para obter todos os Ecopontos
 router.get('/post', postController.findAll);
@@ -17,6 +17,6 @@ router.put('/post/:id', postController.update);
 
 
 // Rota para excluir um Ecoponto por ID
-router.delete('/post/:id',authController.verifyToken, postController.delete);
+router.delete('/post/:id', authController.verifyToken, postController.delete);
 
 module.exports = router;
