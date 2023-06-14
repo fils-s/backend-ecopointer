@@ -4,18 +4,18 @@ const desafioController = require('../controllers/desafios.controller');
 const authController= require('../controllers/auth.controller')
 
 // Rota para criar um novo desafio
-router.post('/challenge', desafioController.create);
+router.post('/challenges', desafioController.create);
 
 // Rota para obter todos os desafios
-router.get('/challenge', desafioController.findAll);
+router.get('/challenges', desafioController.findAll);
 
 // Rota para obter um desafio específico por ID
-router.get('/challenge/:id', desafioController.findOne);
+router.get('/challenges/:id', desafioController.findOne);
 
 // Rota para atualizar um desafio por ID
-router.put('/challenge/:id', desafioController.update);
+router.put('/challenges/:id', desafioController.update);
 
 // Rota para excluir um desafio por ID
-router.delete('/challenge/:id', authController.verifyToken, desafioController.delete);
+router.delete('/challenges/:id', authController.verifyToken, desafioController.delete);
 
 module.exports = router;
