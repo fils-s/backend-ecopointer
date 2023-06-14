@@ -16,6 +16,6 @@ router.get('/challenge/:id', desafioController.findOne);
 router.put('/challenge/:id', desafioController.update);
 
 // Rota para excluir um desafio por ID
-router.delete('/challenge/:id',authController.verifyToken, desafioController.delete);
+router.delete('/challenge/:id', authController.verifyToken, desafioController.delete);
 
 module.exports = router;
