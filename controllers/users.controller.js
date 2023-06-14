@@ -19,10 +19,12 @@ exports.create = async (req, res) => {
     !password ||
     !morada ||
     !tipoUser
+    
   ) {
+    console.log( tipoUser )
     return res.status(400).json({
       success: false,
-      msg: "All fields must be provided",
+      msg: "All fields  must be provided",
     });
   }
 
@@ -72,13 +74,10 @@ exports.findAll = async (req, res) => {
 
 
   try {
-    if (req.loggedUserRole !== "admin")
-    return res.status(403).json({
-    success: false, msg: "This request requires ADMIN role!"
-    });
+   
     // do not expose users' sensitive data
     let users =   await User.find()
-    .select("nome username email tipoUser")
+    .select("nome username email tipoUser xp")
     .exec();
     res.status(200).json({ success: true, users: users });
     }
@@ -158,10 +157,12 @@ exports.delete = async (req, res) => {
     return res.status(403).json({
     success: false, msg: "This request requires ADMIN role!"
     });
+    console.log(req.params.id);
     // do not expose users' sensitive data
     let user =   await User.findByIdAndRemove(req.params.id)
     .exec();
     if (!user) {
+      console.log(req.params.id);
       return res.status(404).json({
         success: false,
         msg: `Cannot delete user with ID ${req.params.id}`,
@@ -218,7 +219,11 @@ exports.delete = async (req, res) => {
             expiresIn: "24h", // 24 hours
           }
         );
-        return res.status(200).json({ success: true, accessToken: token });
+        return res.status(200).json({ success: true,
+          accessToken: token,
+          user: req.body.username,
+          id: user._id,
+          role: user.tipoUser});
       } catch (err) {
         if (err instanceof mongoose.Error.ValidationError) {
           res

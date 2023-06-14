@@ -21,6 +21,10 @@ module.exports = (mongoose) => {
       utilizacao: {
         type: Number,
       },
+      imagem :{
+        type: String,
+        required :[true, "Imagem field is mandatory"]
+      }
     },
     { timestamps: false }
   );

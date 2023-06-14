@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
 const config = require("../config/db.config.js");
 const { use } = require("../routes/users.routes");
+const { log } = require("console");
 
 exports.create = async (req, res) => {
   console.log(req.loggedUserId);
@@ -101,6 +102,7 @@ exports.update = async (req, res) => {
         msg: `Cannot update Evento with ID ${req.params.id}`,
       });
     }
+    console.log(evento);
     return res.json({
       success: true,
       msg: `Evento with ID ${req.params.id} updated successfully`,

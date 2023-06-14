@@ -14,6 +14,7 @@ exports.create = async (req, res) => {
       descricao: req.body.descricao,
       user: req.loggedUserId,
       utilizacao: 0,
+      imagem: req.body.imagem
     });
     console.log(req.loggedUserId);
     const newEcoponto = await ecoponto.save();
@@ -44,7 +45,7 @@ exports.findAll = async (req, res) => {
 
   try {
     const data = await Ecoponto.find(condition)
-      .select("localizacao descricao user utilizacao")
+      .select("localizacao descricao user utilizacao imagem")
       .exec();
 
     return res.status(200).json({ success: true, ecoponto: data });
