@@ -1,20 +1,17 @@
-const dotenv = require('dotenv').config(); // read environment variables from .env file
+const dotenv = require('dotenv').config();
 const express = require('express');
-const cors = require('cors'); // middleware to enable CORS (Cross-Origin Resource Sharing)
+const cors = require('cors');
 const app = express();
-const port = process.env.PORT  ; // use environment variables
+const port = process.env.PORT;
 const host = process.env.HOST;
 
+app.use(cors());
+app.use(express.json());
 
-app.use(cors()); //enable ALL CORS requests (client requests from other domain)
-app.use(express.json()); //enable parsing JSON body data
-
-// root route -- /api/
 app.get('/', function (req, res) {
-    res.status(200).json({ message: 'home -- Ecopointer api' });
+  res.status(200).json({ message: 'home -- Ecopointer api' });
 });
 
-// routing middleware for resource TUTORIALS
 app.use('/Ecopointer/users', require('./routes/users.routes'))
 app.use('/Ecopointer/events', require('./routes/eventos.routes'))
 app.use('/Ecopointer/challenges', require('./routes/desafios.routes'))
@@ -22,8 +19,12 @@ app.use('/Ecopointer/bins', require('./routes/ecopontos.routes'))
 app.use('/Ecopointer/faqs', require('./routes/faqs.routes'))
 app.use('/Ecopointer/posts', require('./routes/posts.routes'))
 
-// handle invalid routes
 app.get('*', function (req, res) {
-    res.status(404).json({ message: 'Erro no caminho' });
+  res.status(404).json({ message: 'Erro no caminho' });
 })
-app.listen(port, host, () => console.log(`App listening at http://${host}:${port}/`));
+
+const server = app.listen(port, host, function () {
+  console.log(`Server running at http://${host}:${port}`);
+});
+
+module.exports = { app: app, server: server };
