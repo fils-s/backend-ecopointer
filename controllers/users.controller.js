@@ -6,38 +6,35 @@ const mongoose = require('mongoose');
 const config = require("../config/db.config.js");
 const { use } = require("../routes/users.routes");
 
-
 exports.create = async (req, res) => {
   const { username, nome, email, IDcidade, password, morada, xp, tipoUser } =
     req.body;
+      if (
+        !username ||
+        !nome ||
+        !email ||
+        !IDcidade ||
+        !password ||
+        !morada ||
+        !tipoUser
+      ) 
+      {
+        return res.status(400).json({
+          success: false,
+          msg: "All fields  must be provided",
+        });
+      }
 
-  if (
-    !username ||
-    !nome ||
-    !email ||
-    !IDcidade ||
-    !password ||
-    !morada ||
-    !tipoUser
-    
-  ) {
-    console.log( tipoUser )
-    return res.status(400).json({
-      success: false,
-      msg: "All fields  must be provided",
-    });
-  }
-
-  const user = new User({
-    username,
-    nome,
-    email,
-    IDcidade,
-    password: bcrypt.hashSync(req.body.password, 10),
-    morada,
-    xp: 0,
-    tipoUser,
-  });
+      const user = new User({
+        username,
+        nome,
+        email,
+        IDcidade,
+        password: bcrypt.hashSync(req.body.password, 10),
+        morada,
+        xp: 0,
+        tipoUser,
+      });
 
   try {
     let newUser = await user.save();
