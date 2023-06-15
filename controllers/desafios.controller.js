@@ -2,7 +2,7 @@ const db = require("../models");
 const Desafio = db.desafios;
 
 exports.create = async (req, res) => {
-  const { xp,descDesafio, recompensa, objetivoDesafio, estadoDesafio, username } = req.body;
+  const { xp,descDesafio, recompensa, objetivoDesafio, estadoDesafio, user } = req.body;
 
   try {
     const desafio = new Desafio({
@@ -10,7 +10,7 @@ exports.create = async (req, res) => {
       recompensa,
       objetivoDesafio,
       estadoDesafio,
-      username,
+      user: req.loggedUserId,
       descDesafio
     });
 

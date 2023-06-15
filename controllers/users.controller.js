@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const mongoose = require('mongoose');
 const config = require("../config/db.config.js");
 const { use } = require("../routes/users.routes");
+const { log } = require("console");
 
 
 exports.create = async (req, res) => {
@@ -21,7 +22,7 @@ exports.create = async (req, res) => {
     !tipoUser
     
   ) {
-    console.log( tipoUser )
+    
     return res.status(400).json({
       success: false,
       msg: "All fields  must be provided",
@@ -117,11 +118,13 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   if (!req.params.id) {
+    
     return res.status(400).json({
       success: false,
       msg: `ID parameter must not be empty!`,
     });
   }
+ 
   if (req.params.id !=req.loggedUserId ) {
     return res.status(403).json({
       success: false,
@@ -157,12 +160,12 @@ exports.delete = async (req, res) => {
     return res.status(403).json({
     success: false, msg: "This request requires ADMIN role!"
     });
-    console.log(req.params.id);
+  
     // do not expose users' sensitive data
     let user =   await User.findByIdAndRemove(req.params.id)
     .exec();
     if (!user) {
-      console.log(req.params.id);
+
       return res.status(404).json({
         success: false,
         msg: `Cannot delete user with ID ${req.params.id}`,
@@ -188,7 +191,7 @@ exports.delete = async (req, res) => {
 
     exports.login = async (req, res) => {
       try {
-        console.log(req.body);
+
         if (!req.body || !req.body.username || !req.body.password) {
           return res
             .status(400)
@@ -219,6 +222,7 @@ exports.delete = async (req, res) => {
             expiresIn: "24h", // 24 hours
           }
         );
+   
         return res.status(200).json({ success: true,
           accessToken: token,
           user: req.body.username,

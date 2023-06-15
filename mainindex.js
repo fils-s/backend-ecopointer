@@ -26,4 +26,9 @@ app.use('/Ecopointer/posts', require('./routes/posts.routes'))
 app.get('*', function (req, res) {
     res.status(404).json({ message: 'Erro no caminho' });
 })
-app.listen(port, host, () => console.log(`App listening at http://${host}:${port}/`));
+const server = app.listen(port, host, () => {
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(`App listening at http://${host}:${port}/`);
+    }
+  });
+module.exports={ app, server}

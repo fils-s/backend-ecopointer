@@ -87,10 +87,11 @@ exports.update = async (req, res) => {
   }
 
   try {
-    const ecoponto = await Ecoponto.findByIdAndUpdate(
-      req.params.id,
-      req.body
-    ).exec();
+    console.log(req.params.id);
+    console.log(req.body);
+    const ecoponto = await Ecoponto.findByIdAndUpdate(req.params.id, req.body, {
+      runValidators: true,
+    }).exec();
 
     if (!ecoponto) {
       return res.status(404).json({
@@ -167,6 +168,7 @@ exports.add = async (req, res) => {
       });
     
     }
+    else{
     
     let post = new Post({
       imagem: req.body.imagem,
@@ -181,6 +183,7 @@ exports.add = async (req, res) => {
       success: true,
       msg: `Ecoponto with ID ${req.params.id} updated successfully`,
     });
+  }
   } catch (error) {
     return res.status(500).json({
       success: false,

@@ -4,7 +4,7 @@ const desafioController = require('../controllers/desafios.controller');
 const authController= require('../controllers/auth.controller')
 
 // Rota para criar um novo desafio
-router.post('/challenge', desafioController.create);
+router.post('/challenge',authController.verifyToken, desafioController.create);
 
 // Rota para obter todos os desafios
 router.get('/challenge', desafioController.findAll);

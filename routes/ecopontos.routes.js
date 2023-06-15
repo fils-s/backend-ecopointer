@@ -7,13 +7,13 @@ const authController= require('../controllers/auth.controller')
 router.post('/bin',authController.verifyToken, ecopontoController.create);
 
 // Rota para obter todos os Ecopontos
-router.get('/bin', ecopontoController.findAll);
+router.get('/bin',authController.verifyToken, ecopontoController.findAll);
 
 // Rota para obter um Ecoponto específico por ID
-router.get('/bin/:id', ecopontoController.findOne);
+router.get('/bin/:id',authController.verifyToken, ecopontoController.findOne);
 
 // Rota para atualizar um Ecoponto por ID
-router.put('/bin/:id', ecopontoController.update);
+router.put('/bin/:id',authController.verifyToken, ecopontoController.update);
 router.put('/bin/add/:id', ecopontoController.add);
 router.put('/bin/post/:id', authController.verifyToken, ecopontoController.add);
 
