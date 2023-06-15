@@ -9,7 +9,7 @@ exports.create = async (req, res) => {
       xp,
       recompensa,
       objetivoDesafio,
-      estadoDesafio: 0,
+      estadoDesafio,
       username,
       descDesafio
     });
