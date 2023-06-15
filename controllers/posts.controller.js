@@ -56,7 +56,7 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id).exec();
-    if (!evento) {
+    if (!post) {
       return res.status(404).json({
         success: false,
         msg: `Cannot find any Post with the ID ${req.params.id}`,
@@ -124,13 +124,6 @@ exports.delete = async (req, res) => {
     
     let post =   await Post.findByIdAndRemove(req.params.id)
     
-      const ecoponto = await Ecoponto.findByIdAndUpdate(
-        post.ecoponto,
-        { $inc: { utilizacao: -1 } },
-        { new: true }
-      ).exec();
-    
-    
     if (!post) {
       return res.status(404).json({
         success: false,
@@ -138,6 +131,15 @@ exports.delete = async (req, res) => {
       });
       
     }
+    
+      const ecoponto = await Ecoponto.findByIdAndUpdate(
+        post.ecoponto,
+        { $inc: { utilizacao: -1 } },
+        { new: true }
+      ).exec();
+    
+    
+    
     return res.json({
       success: true,
       msg: `Post with ID ${req.params.id} deleted successfully`,

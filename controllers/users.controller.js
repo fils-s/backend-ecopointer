@@ -5,7 +5,6 @@ const bcrypt = require("bcryptjs");
 const mongoose = require('mongoose');
 const config = require("../config/db.config.js");
 const { use } = require("../routes/users.routes");
-const { log } = require("console");
 
 
 exports.create = async (req, res) => {

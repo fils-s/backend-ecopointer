@@ -21,11 +21,13 @@ exports.verifyToken = (req, res, next) => {
  
     try {
     let decoded = jwt.verify(token, config.SECRET);
-
+   
     req.loggedUserId = decoded.id; // save user ID and role into request object
     req.loggedUserRole = decoded.tipoUser;
     next();
     } catch (err) {
+       
     return res.status(401).json({ success: false, msg: "Unauthorized!" });
     }
     };
+    
