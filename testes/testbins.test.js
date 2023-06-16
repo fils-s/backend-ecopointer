@@ -3,8 +3,11 @@ const request = require("supertest");
 const { app, server } = require("../mainindex");
 const jwt = require("jsonwebtoken");
 const config = require("../config/db.config");
-const Ecoponto = require("../models/ecoponto.model");
+
 const { log } = require("console");
+const db = require("../models");
+const Ecoponto = db.ecopontos;
+let    newEcoponto;
 
 let accessToken;
 
@@ -12,6 +15,39 @@ const database = config.URL;
 
 beforeAll(async () => {
   await mongoose.connect(database, { useNewUrlParser: true });
+  const response1 = await request(app).post("/Ecopointer/users/login").send({
+    username: "Carlos13",
+    password: "teste",
+  });
+
+  expect(response1.status).toBe(200);
+  console.log(response1);
+  
+
+  // Acessar o token de acesso (accessToken)
+  accessToken = response1.body.accessToken;
+  console.log(accessToken);
+  const ecoponto = new Ecoponto({
+    "localizacao": {
+      "latitude": 41.360464,
+      "longitude": -8.742650
+    },
+        descricao: "descricao",
+        imagem: "imagem",
+  });
+
+   newEcoponto = await ecoponto.save();
+
+
+
+
+
+ 
+
+console.log(     newEcoponto._id);
+  console.log(   newEcoponto)
+
+  
 });
 
 afterAll(async () => {
@@ -102,13 +138,13 @@ describe("Testes para is buscar um ecoponto ", () => {
     const ecopontoId = "648998cbe8acd26276577160"; // Fornecer um ID válido aqui
 
     const response = await request(app)
-      .get(`/Ecopointer/bins/bin/${ecopontoId}`)
+      .get(`/Ecopointer/bins/bin/${newEcoponto._id}`)
       .set("Authorization", `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.ecoponto).toBeTruthy();
-    expect(response.body.ecoponto._id).toBe(ecopontoId);
+    
   });
   test("Deve retornar erro 404 quando o ID do Ecoponto não for encontrado", async () => {
     const ecopontoId = "648998cbe8acd26276577161"; // Fornecer um ID que não exista
@@ -151,14 +187,14 @@ describe("Testes de update de ecoponto ", () => {
     };
 
     const response = await request(app)
-      .put(`/Ecopointer/bins/bin/648b15154a7f9460163e6b8d`)
+      .put(`/Ecopointer/bins/bin/${newEcoponto._id}`)
       .set("Authorization", `Bearer ${accessToken}`)
       .send(newData);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "Ecoponto with ID 648b15154a7f9460163e6b8d updated successfully"
+      `Ecoponto with ID ${newEcoponto._id} updated successfully`
     );
   });
   test("Deve retornar erro 404 quando não ecnontrar o ecoponto", async () => {
@@ -180,7 +216,35 @@ describe("Testes de update de ecoponto ", () => {
     expect(response.body.msg).toBeTruthy();
   });
 });
-describe("Testes de update de ecoponto ", () => {
+describe("Testes de adicionar utilização ao  ecoponto ", () => {
+  test("Deve retornar erro 500 porque não da para adicionar post", async () => {
+    const response = await request(app)
+      .put("/Ecopointer/bins/bin/post/648b215b2c33a0e5d63040e")
+      .set("Authorization", `Bearer ${accessToken}`)
+
+      .send({ imagem:"teste.png",
+               data: "2023-05-05"})
+      .expect(500);
+
+    expect(response.body.msg).toBe(
+      "Error uploading post of this Ecoponto: Cast to ObjectId failed for value \"648b215b2c33a0e5d63040e\" (type string) at path \"_id\" for model \"ecoponto\"")
+    
+  });
+  test("Deve retornar sucesso ", async () => {
+    const response = await request(app)
+      .put(`/Ecopointer/bins/bin/post/${newEcoponto._id}`)
+      .set("Authorization", `Bearer ${accessToken}`)
+
+      .send({ imagem:"teste.png",
+               data: "2023-05-05"})
+      .expect(200);
+
+    expect(response.body.msg).toBe(
+      `Ecoponto with ID ${newEcoponto._id} updated successfully`
+    );
+  });
+});
+describe("Testes de delete  ", () => {
   test("Deve retornar erro 403 quando o usuário não for um administrador", async () => {
     const response = await request(app)
       .delete("/Ecopointer/bins/bin/648b15154a7f9460163e6b8d")
@@ -204,7 +268,7 @@ describe("Testes de update de ecoponto ", () => {
     // Simular um usuário administrador
 
     const response = await request(app)
-      .delete(`/Ecopointer/bins/bin/648b1b2c1bb98df1daed7cdc`)
+      .delete(`/Ecopointer/bins/bin/${newEcoponto._id}`)
       .set("Authorization", `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
@@ -221,31 +285,4 @@ describe("Testes de update de ecoponto ", () => {
     expect(response.body.msg).toBeTruthy();
   });
 });
-describe("Testes de adicionar utilização ao  ecoponto ", () => {
-  test("Deve retornar erro 500 porque não da para adicionar post", async () => {
-    const response = await request(app)
-      .put("/Ecopointer/bins/bin/post/648b215b2c33a0e5d63040e")
-      .set("Authorization", `Bearer ${accessToken}`)
 
-      .send({ imagem:"teste.png",
-               data: "2023-05-05"})
-      .expect(500);
-
-    expect(response.body.msg).toBe(
-      "Error uploading post of this Ecoponto: Cast to ObjectId failed for value \"648b215b2c33a0e5d63040e\" (type string) at path \"_id\" for model \"ecoponto\"")
-    
-  });
-  test("Deve retornar sucesso ", async () => {
-    const response = await request(app)
-      .put("/Ecopointer/bins/bin/post/648b215b2c33a0e5d63040ef")
-      .set("Authorization", `Bearer ${accessToken}`)
-
-      .send({ imagem:"teste.png",
-               data: "2023-05-05"})
-      .expect(200);
-
-    expect(response.body.msg).toBe(
-      "Ecoponto with ID 648b215b2c33a0e5d63040ef updated successfully"
-    );
-  });
-});

@@ -3,32 +3,67 @@ const request = require("supertest");
 const { app, server } = require("../mainindex");
 const jwt = require("jsonwebtoken");
 const config = require("../config/db.config");
-const Desafio = require("../models/desafio.model");
+
 const { log } = require("console");
+const db = require("../models");
+const Desafio = db.desafios;
 
 let accessToken;
+let createdDesafio;
+let newDesafio;
 
 const database = config.URL;
 
 beforeAll(async () => {
   await mongoose.connect(database, { useNewUrlParser: true });
+  const response1 = await request(app).post("/Ecopointer/users/login").send({
+    username: "Carlos13",
+    password: "teste",
+  });
+
+  expect(response1.status).toBe(200);
+  console.log(response1);
+  
+
+  // Acessar o token de acesso (accessToken)
+  accessToken = response1.body.accessToken;
+  console.log(accessToken);
+  const desafio = new Desafio({
+    xp: 1100,
+    recompensa: "caneta",
+    objetivoDesafio: 15,
+    estadoDesafio: 0,
+    user: "teste",
+    descDesafio: "Publicar fotos",
+  });
+
+   newDesafio = await desafio.save();
+
+
+
+
+
+ 
+
+console.log(  newDesafio._id);
+  console.log(newDesafio)
+
+  
+});
+
+
+afterEach(async () => {
+ 
 });
 
 afterAll(async () => {
+  await Desafio.findByIdAndRemove(newDesafio._id);
   await mongoose.disconnect();
   server.close();
 });
 describe("Registar desafio", () => {
   test("Deve retornar sucesso ao criar um novo Desafio", async () => {
-    const response1 = await request(app).post("/Ecopointer/users/login").send({
-      username: "Carlos13",
-      password: "teste",
-    });
-
-    expect(response1.status).toBe(200);
-
-    // Acessar o token de acesso (accessToken)
-    accessToken = response1.body.accessToken;
+    
     const desafioData = {
       xp: 1100,
       recompensa: "caneta",
@@ -47,6 +82,7 @@ describe("Registar desafio", () => {
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe("New Desafio created.");
     expect(response.body.URL).toBeTruthy();
+    createdDesafio = response.body;
   });
   test("Deve retornar erro 400 se houver erros de validação ao criar um Desafio", async () => {
     const desafioData = {
@@ -89,7 +125,7 @@ describe("Registar desafio", () => {
 describe("Procurar um desafio", () => {
   test("Deve retornar o Desafio corretamente ao pesquisar por um ID válido", async () => {
     const response = await request(app)
-      .get(`/Ecopointer/challenges/challenge/6463b1ab29f06d905c7ecc79`)
+      .get(`/Ecopointer/challenges/challenge/${newDesafio._id}`)
       .expect(200);
 
     expect(response.body.success).toBe(true);
@@ -135,7 +171,7 @@ describe("Update as desafios", () => {
     };
 
     const response = await request(app)
-      .put("/Ecopointer/challenges/challenge/648b283feb02be70a2bbcd1a")
+      .put(`/Ecopointer/challenges/challenge/${newDesafio._id}`)
       .send({
         descDesafio: "teste",
       });
@@ -143,14 +179,14 @@ describe("Update as desafios", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      `Desafio with ID 648b283feb02be70a2bbcd1a updated successfully`
+      `Desafio with ID ${newDesafio._id} updated successfully`
     );
   });
   test("Deve retornar erro 400 se o id tiver um mau formato", async () => {
     // ID que não existe no banco de dados
 
     const response = await request(app)
-      .put(`/Ecopointer/challenges/challenge/648b283feb02be70a2bbcd1`)
+      .put(`/Ecopointer/challenges/challenge/648b283feb02be70a2bbcd1}`)
       .send({ xp: 20 });
 
     expect(response.status).toBe(400);
@@ -175,19 +211,19 @@ describe("Apagar desafios", () => {
   test("Deve deletar o desafio com o ID fornecido", async () => {
    
 
-    const response = await request(app).delete(`/Ecopointer/challenges/challenge/648b36af4d858d67807f3c43`)
+    const response = await request(app).delete(`/Ecopointer/challenges/challenge/${newDesafio._id}`)
     .set("Authorization", `Bearer ${accessToken}`);
 
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      `Desafio with ID 648b36af4d858d67807f3c43 deleted successfully`
+      `Desafio with ID ${newDesafio._id} deleted successfully`
     );
 
     
   });
-  test("Deve deletar o desafio com o ID fornecido", async () => {
+  test("Deve dar erro com id nao encontrado", async () => {
    
 
     const response = await request(app).delete(`/Ecopointer/challenges/challenge/648b36af4d858d67807f3c43`)

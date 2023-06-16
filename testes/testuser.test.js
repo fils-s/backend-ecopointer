@@ -3,22 +3,63 @@ const request = require("supertest");
 const { app, server } = require("../mainindex");
 const jwt = require("jsonwebtoken");
 const config = require("../config/db.config");
-const User = require("../models/user.model");
+
 const { log } = require("console");
+const db = require("../models");
+const User = db.users;
 let accessToken;
+let createUser
+let newUser;
 
 const database = config.URL;
 
 
 beforeAll(async () => {
   await mongoose.connect(database, { useNewUrlParser: true });
+  const response1 = await request(app).post("/Ecopointer/users/login").send({
+    username: "Carlos13",
+    password: "teste",
+  });
+
+  expect(response1.status).toBe(200);
+  console.log(response1);
+  
+
+  // Acessar o token de acesso (accessToken)
+  accessToken = response1.body.accessToken;
+  console.log(accessToken);
+  const user = new User({
+    username: "teste1",
+      password: "teste1",
+      email: "teste@gmail.com",
+      morada: "teste",
+      IDcidade: "teste",
+      xp: "0",
+      tipoUser: "user",
+      nome: "teste",
+  });
+
+   newUser = await user.save();
+
+
+
+
+
+
+ 
+
+console.log(  newUser._id);
+  console.log(newUser)
+
   
 });
 
+
+
 afterAll(async () => {
+  await User.findByIdAndRemove(newUser._id);
   await mongoose.disconnect();
   server.close();
-  
 });
 
 describe("Registar utilizador", () => {
@@ -121,7 +162,7 @@ describe("Atualizar utilizador", () => {
   test("update com sucesso", async () => {
     // Fazer a requisição utilizando o token no cabeçalho de autorização
     const response = await request(app)
-      .put("/Ecopointer/users/user/64850c90ff46cfe044dd4c08")
+      .put(`/Ecopointer/users/user/648c3e8ffe9176242ff64455`)
       .set("Authorization", `Bearer ${accessToken}`)
       .send({
         username: "Carlos",
@@ -151,10 +192,10 @@ describe("BUSCAR USERS", () => {
 });
 describe("BUSCAR USER EM ESPECIFICO", () => {
   test("Buscar usuário por ID com sucesso", async () => {
-    const userId = "64850c90ff46cfe044dd4c08";
+    
 
     const response = await request(app)
-      .get(`/Ecopointer/users/user/${userId}`)
+      .get(`/Ecopointer/users/user/${newUser._id}`)
       .set("Authorization", `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
@@ -199,7 +240,7 @@ describe("APAGAR USER", () => {
     expect(response.body.msg).toContain("This request requires ADMIN role");
   });
   test("Deletar usuário com sucesso (admin)", async () => {
-    const userId = "648a454dde6cb3220776835a";
+    
     const response1 = await request(app).post("/Ecopointer/users/login").send({
       username: "Carlos13",
       password: "teste",
@@ -211,13 +252,13 @@ describe("APAGAR USER", () => {
     accessToken = response1.body.accessToken;
 
     const response = await request(app)
-      .delete(`/Ecopointer/users/user/${userId}`)
+      .delete(`/Ecopointer/users/user/${newUser._id}`)
       .set("Authorization", `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toContain(
-      `User with ID ${userId} deleted successfully`
+      `User with ID ${newUser._id} deleted successfully`
     );
   });
 

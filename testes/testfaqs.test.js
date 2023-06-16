@@ -5,15 +5,54 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/db.config");
 const User = require("../models/user.model");
 const { log } = require("console");
+const db = require("../models");
+const FAQ = db.faqs;
 let accessToken;
+
+let createFaq;
+let newFaq;
 
 const database = config.URL;
 
 beforeAll(async () => {
   await mongoose.connect(database, { useNewUrlParser: true });
+  const response1 = await request(app).post("/Ecopointer/users/login").send({
+    username: "Carlos13",
+    password: "teste",
+  });
+
+  expect(response1.status).toBe(200);
+  console.log(response1);
+  
+
+  // Acessar o token de acesso (accessToken)
+  accessToken = response1.body.accessToken;
+  console.log(accessToken);
+  const faq = new FAQ({
+    nome: "Pergunta",
+      descricao: "Resposta",
+      type: "type",
+  });
+
+   newFaq = await faq.save();
+
+
+
+
+
+
+ 
+
+console.log(  newFaq._id);
+  console.log(newFaq)
+
+  
 });
 
+
+
 afterAll(async () => {
+  await FAQ.findByIdAndRemove(newFaq._id);
   await mongoose.disconnect();
   server.close();
 });
@@ -62,7 +101,7 @@ describe("Buscar todas faqs", () => {
 describe("Buscar uma faq em especifico", () => {
   test("Deve retornar uma FAQ específica pelo ID", async () => {
     const response = await request(app).get(
-      `/Ecopointer/faqs/faq/6465383782c294ca213c9397`
+      `/Ecopointer/faqs/faq/${newFaq._id}`
     );
 
     expect(response.status).toBe(200);
@@ -98,13 +137,13 @@ describe("Dar update duma faq", () => {
     };
 
     const response = await request(app)
-      .put(`/Ecopointer/faqs/faq/6465383782c294ca213c9397`)
+      .put(`/Ecopointer/faqs/faq/${newFaq._id}`)
       .send(updatedFaq);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      `Ajuda with ID 6465383782c294ca213c9397 updated successfully`
+      `Ajuda with ID ${newFaq._id} updated successfully`
     );
   });
   test("Deve retornar erro 404 ao atualizar uma FAQ inexistente", async () => {
@@ -148,13 +187,13 @@ describe("Apagar uma faq", () => {
     // Acessar o token de acesso (accessToken)
     accessToken = response1.body.accessToken;
     const response = await request(app)
-      .delete(`/Ecopointer/faqs/faq/648ba4ede510f44f57eb0278`)
+      .delete(`/Ecopointer/faqs/faq/${newFaq._id}`)
       .set("Authorization", `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      `Ajuda with ID 648ba4ede510f44f57eb0278 deleted successfully`
+      `Ajuda with ID ${newFaq._id} deleted successfully`
     );
   });
   test("Deve retornar erro 404 ao excluir uma FAQ inexistente", async () => {

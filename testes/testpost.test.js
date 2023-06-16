@@ -5,20 +5,54 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/db.config");
 const User = require("../models/user.model");
 const { log } = require("console");
+const db = require("../models");
+const Post = db.posts;
 let accessToken;
+let createPost
+let newPost;
 
 const database = config.URL;
 
 
 beforeAll(async () => {
   await mongoose.connect(database, { useNewUrlParser: true });
+  const response1 = await request(app).post("/Ecopointer/users/login").send({
+    username: "Carlos13",
+    password: "teste",
+  });
+
+  expect(response1.status).toBe(200);
+  console.log(response1);
+  
+
+  // Acessar o token de acesso (accessToken)
+  accessToken = response1.body.accessToken;
+  console.log(accessToken);
+  const post = new Post({
+    imagem: 'imagem.jpg', data: '2023-06-15'
+  });
+
+   newPost = await post.save();
+
+
+
+
+
+
+ 
+
+console.log(  newPost._id);
+  console.log(newPost)
+
   
 });
 
+
+
 afterAll(async () => {
+  await Post.findByIdAndRemove(newPost._id);
   await mongoose.disconnect();
   server.close();
-  
 });
 describe('Criar um post', () => {
     test('Deve criar um novo post', async () => {
@@ -86,7 +120,7 @@ describe('Buscar todos os posts', () => {
     describe('Buscar um post em escifico', () => {
         test('Deve retornar um post com o ID especificado', async () => {
             const response = await request(app)
-              .get(`/Ecopointer/posts/post/646e952b342c4f94765f9037`);
+              .get(`/Ecopointer/posts/post/${newPost._id}`);
         
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
@@ -122,16 +156,16 @@ describe('Buscar todos os posts', () => {
                   imagem: 'imagem2.jpg',
                   data: '2023-06-16',
                   user: 'user2',
-                  ecoponto: 'ecoponto2',
+                  ecoponto: '648c3e8ffe9176242ff64455',
                 };
             
                 const response = await request(app)
-                  .put(`/Ecopointer/posts/post/646e952b342c4f94765f9037`)
+                  .put(`/Ecopointer/posts/post/${newPost._id}`)
                   .send(updatedData);
             
                 expect(response.status).toBe(200);
                 expect(response.body.success).toBe(true);
-                expect(response.body.msg).toBe(`Post with ID 646e952b342c4f94765f9037 updated successfully`);
+                expect(response.body.msg).toBe(`Post with ID ${newPost._id} updated successfully`);
             
                 
               });
@@ -158,7 +192,7 @@ describe('Buscar todos os posts', () => {
                   imagem: 'imagem2.jpg',
                   data: '2023-06-16',
                   user: 'user2',
-                  ecoponto: 'ecoponto2',
+                  ecoponto: '648c3e8ffe9176242ff64455',
                 };
             
                 const response = await request(app)
@@ -172,12 +206,13 @@ describe('Buscar todos os posts', () => {
             });
             describe('Apagar um post em escifico', () => {
                 test('Deve deletar o post com o ID especificado', async () => {
-                    const response = await request(app).delete(`/Ecopointer/posts/post/648a4bbae0ce6e9c1e4f8a59`)
+                    const response = await request(app).delete(`/Ecopointer/posts/post/${newPost._id}`)
                     .set("Authorization", `Bearer ${accessToken}`);
+                    console.log(response.body.msg);
                 
                     expect(response.status).toBe(200);
                     expect(response.body.success).toBe(true);
-                    expect(response.body.msg).toBe(`Post with ID 648a4bbae0ce6e9c1e4f8a59 deleted successfully`);
+                    expect(response.body.msg).toBe(`Post with ID ${newPost._id} deleted successfully`);
                 
                   
                   });

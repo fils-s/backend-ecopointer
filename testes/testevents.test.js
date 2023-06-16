@@ -3,17 +3,58 @@ const request = require("supertest");
 const { app, server } = require("../mainindex");
 const jwt = require("jsonwebtoken");
 const config = require("../config/db.config");
-const Evento = require("../models/evento.model");
 const { log } = require("console");
+const db = require("../models");
+const Evento = db.eventos;
+
 let accessToken;
+let createEvent;
+let newEvent;
 
 const database = config.URL;
-
 beforeAll(async () => {
   await mongoose.connect(database, { useNewUrlParser: true });
+  const response1 = await request(app).post("/Ecopointer/users/login").send({
+    username: "Carlos13",
+    password: "teste",
+  });
+
+  expect(response1.status).toBe(200);
+  console.log(response1);
+  
+
+  // Acessar o token de acesso (accessToken)
+  accessToken = response1.body.accessToken;
+  console.log(accessToken);
+  const evento = new Evento({
+    nome: "Apanhar lixo",
+        descricao: "Apanhar lixo na praia",
+        cidade: "Vida do Conde",
+        data: "06-10-2023",
+        imagem: "teste.png",
+        gostos: 0,
+        user: response1.id,
+  });
+
+   newEvent = await evento.save();
+
+
+
+
+
+
+ 
+
+console.log(  newEvent._id);
+  console.log(newEvent)
+
+  
 });
 
+
+
 afterAll(async () => {
+  await Evento.findByIdAndRemove(newEvent._id);
   await mongoose.disconnect();
   server.close();
 });
@@ -28,19 +69,21 @@ describe("Registar Evento", () => {
 
     // Acessar o token de acesso (accessToken)
     accessToken = response1.body.accessToken;
-    const eventoData = {
-      nome: "Evento 1",
-      descricao: "Descrição do Evento 1",
-      cidade: "Cidade 1",
-      data: "2023-06-30",
-      imagem: "imagem.jpg",
-    };
-
+    const evento = {
+      nome: "Apanhar lixo",
+          descricao: "Apanhar lixo na praia",
+          cidade: "Vida do Conde",
+          data: "06-10-2023",
+          imagem: "teste.png",
+          gostos: 0,
+          user: response1.id,
+    
+    }
     const response = await request(app)
       .post("/Ecopointer/events/event")
       .set("Authorization", `Bearer ${accessToken}`)
-      .send(eventoData);
-
+      .send(evento);
+console.log(response.body.errors);
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe("New Evento created.");
@@ -80,7 +123,7 @@ describe("Buscar um evento", () => {
     test('Deve retornar o evento com o ID fornecido', async () => {
        
     
-        const response = await request(app).get(`/Ecopointer/events/event/646520f846309db3144021d0`);
+        const response = await request(app).get(`/Ecopointer/events/event/${newEvent._id}`);
     
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
@@ -121,12 +164,12 @@ describe("Buscar um evento", () => {
             };
         
             const response = await request(app)
-              .put(`/Ecopointer/events/event/646520f846309db3144021d0`)
+              .put(`/Ecopointer/events/event/${newEvent._id}`)
               .send(updatedEvento);
         
             expect(response.status).toBe(200);
             expect(response.body.success).toBe(true);
-            expect(response.body.msg).toBe(`Evento with ID 646520f846309db3144021d0 updated successfully`);
+            expect(response.body.msg).toBe(`Evento with ID ${newEvent._id} updated successfully`);
         
             
           });
@@ -177,13 +220,13 @@ describe("Buscar um evento", () => {
             test('Deve deletar o evento com o ID fornecido', async () => {
                
             
-                const response = await request(app).delete(`/Ecopointer/events/event/648b3cf4be1d7dd8efead2e0`)
+                const response = await request(app).delete(`/Ecopointer/events/event/${newEvent._id}`)
                 .set("Authorization", `Bearer ${accessToken}`);
 
             
                 expect(response.status).toBe(200);
                 expect(response.body.success).toBe(true);
-                expect(response.body.msg).toBe(`Evento with ID 648b3cf4be1d7dd8efead2e0 deleted successfully`);
+                expect(response.body.msg).toBe(`Evento with ID ${newEvent._id} deleted successfully`);
             
                 
               });
