@@ -99,7 +99,7 @@ exports.update = async (req, res) => {
     if (!faq) {
       return res.status(404).json({
         success: false,
-        msg: `Ajuda update Evento with ID ${req.params.id}`,
+        msg: `Cant update ajuda with ID ${req.params.id}`,
       });
     }
     return res.json({
